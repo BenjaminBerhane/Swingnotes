@@ -1,14 +1,20 @@
 import jwt from 'jsonwebtoken';
 
-function authenticateToken(req, res, next) {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.sendStatus(401);
+export function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
+  // Tokenen måste skickas som "Bearer <token>"
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'Ingen token. Åtkomst nekad.' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded; // sparar decoded info i request-objektet
     next();
-  });
+  } catch (err) {
+    return res.status(403).json({ message: 'Ogiltig eller utgången token.' });
+  }
 }
-
-module.exports = authenticateToken;
