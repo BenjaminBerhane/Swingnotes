@@ -1,23 +1,17 @@
 import express from 'express';
-import http from 'http';
 import dotenv from 'dotenv';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
 
-import userRoutes from './routes/user.js';
-import noteRoutes from './routes/notes.js';
-
 dotenv.config();
 
 const app = express();
-const server = http.createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('Swingnotes API är igång!');
-});
 
 // Middlewares
 app.use(express.json());
 
+import userRoutes from './routes/user.js';
+import noteRoutes from './routes/notes.js';
 // Routes
 app.use('/api/user', userRoutes);
 app.use('/api/notes', noteRoutes);

@@ -30,6 +30,7 @@ export async function createNote(req, res) {
 
     res.status(201).json(result.rows[0]);
   } catch (err) {
+    console.error('Fel vid skapande av anteckning:', err);
     res.status(500).json({ message: 'Kunde inte spara anteckning' });
   }
 }
@@ -37,11 +38,12 @@ export async function createNote(req, res) {
 // Ändra anteckning
 export async function updateNote(req, res) {
   const { id, title, text } = req.body;
+  console.log('Uppdaterar anteckning:', { id, title, text, userId: req.user.id }); // Logga indata
 
   try {
     const result = await pool.query(
       `UPDATE notes 
-       SET title = $1, text = $2, modified_at = CURRENT_TIMESTAMP 
+       SET title = $1, text = $2, modifiedAt = CURRENT_TIMESTAMP 
        WHERE id = $3 AND user_id = $4 
        RETURNING *`,
       [title, text, id, req.user.id]
@@ -53,6 +55,7 @@ export async function updateNote(req, res) {
 
     res.json(result.rows[0]);
   } catch (err) {
+    console.error('Fel vid uppdatering av anteckning:', err);
     res.status(500).json({ message: 'Kunde inte uppdatera anteckning' });
   }
 }
